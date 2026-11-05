@@ -1,0 +1,30 @@
+.content-shell { width: min(1000px, calc(100% - 32px)); margin: 32px auto; display: grid; gap: 24px; }
+.content-shell form, .content-shell label { display: grid; gap: 12px; }
+.content-shell label.check { display: flex; align-items: center; gap: 10px; }
+.content-shell input:not([type=checkbox]), .content-shell textarea, .content-shell select {
+  width: 100%; min-width: 0; padding: 12px 14px; border: 1px solid var(--line);
+  border-radius: 6px; background: #fafcfd; color: var(--ink); font: inherit;
+}
+.content-shell input[type=checkbox] { width: auto; }
+.content-shell fieldset { display: flex; flex-wrap: wrap; gap: 20px; border: 1px solid var(--line); border-radius: 6px; }
+.content-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; }
+.content-actions h2 { margin-right: auto; }
+.content-item { border-top: 1px solid var(--line); padding: 20px 0; overflow-wrap: anywhere; }
+.content-item pre { white-space: pre-wrap; overflow-wrap: anywhere; background: #f3f6f7; padding: 16px; max-height: 360px; overflow: auto; }
+.content-item textarea { min-height: 180px; }
+.content-item .error, #message[data-error=true] { color: #a22424; }
+.content-item a { color: var(--accent); }
+.content-item details { margin: 14px 0; }
+.content-item details > input, .content-item details > textarea { margin: 8px 0; }
+
+.content-shell { width: min(1280px, calc(100% - 32px)); }
+.week-day { border-top: 1px solid var(--line); padding: 18px 0; }
+.week-day-slots { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 16px; }
+.content-shell .week-slot { display: grid; min-width: 0; padding: 16px; gap: 12px; }
+.week-slot textarea { resize: vertical; min-height: 180px; }
+.script-meta { white-space: pre-wrap; overflow-wrap: anywhere; font-size: .85rem; }
+@media (max-width: 850px) { .week-day-slots { grid-template-columns: 1fr; } }
+
+.week-save-actions { position: sticky; top: 8px; z-index: 2; background: white; padding: 12px; border: 1px solid var(--line); border-radius: 6px; }
+
+.planner-summary { display:grid;grid-template-columns:repeat(4,1fr);gap:12px; }.planner-summary p { padding:14px;background:#eef6f6;border-radius:8px; }.workflow-strip { color:var(--accent);font-weight:600; }.retry-countdown { color:#895500; } @media(max-width:600px){.planner-summary{grid-template-columns:repeat(2,1fr);}}

@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Video studio | Relationship Coach</title>
+    <link rel="stylesheet" href="/style.css"><link rel="stylesheet" href="/studio.css">
+  </head>
+  <body class="studio-app video-app"><aside class="studio-sidebar"><a href="/" class="studio-brand"><img class="workspace-logo" src="/brand/workspace-logo.png?v=relationship-coach-20261104" alt="Relationship Coach" width="2172" height="724"></a><span class="nav-label">WORKSPACE</span><nav class="studio-nav" aria-label="Main navigation"><a href="/content.html" ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M7 3v4m10-4v4M3 10h18m-13 4h2m4 0h2m-8 3h2"/></svg>Content studio</a><a href="/" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="3" y="5" width="14" height="14" rx="3"/><path d="m17 9 4-2v10l-4-2"/></svg>Video studio</a><a href="/#brand-settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="3" fill="white"/><circle cx="15" cy="17" r="3" fill="white"/></svg>Brand &amp; accounts</a></nav><div class="sidebar-note"><span class="live-dot"></span> Local workspace<small>Africa / Lagos</small><span class="posting-note">Publishing paused</span></div></aside><div class="studio-workspace"><header class="studio-topbar"><div><span class="workspace-name">Workspace</span><span class="breadcrumb-divider">/</span><strong>Video studio</strong></div><span class="workspace-avatar" aria-label="Relationship Coach workspace">RC</span></header>
+    <main class="shell"><header class="studio-page-heading"><div><p class="eyebrow">CREATE &amp; REFINE</p><h1>Video studio</h1><p>From your spoken script to a finished video.</p></div><a class="button-link secondary-button" href="/content.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M7 3v4m10-4v4M3 10h18m-13 4h2m4 0h2m-8 3h2"/></svg> Content planner</a></header>
+      <section class="panel form-panel">
+<div class="section-heading"><div><h2>Create a video</h2><p>Write the words. Your saved presenter takes it from here.</p></div><span class="quiet-badge">Script to video</span></div>
+<details class="saved-slot-disclosure"><summary>Use a saved content slot <span class="summary-hint">Choose from your weekly plan</span></summary>
+        <form id="approved-video-start" class="form">
+          
+          <p>Choose a date and slot you have saved in Weekly Scripts. Start Video splits your exact script, generates the clips and edits the final preview. Posting is off.</p>
+          <div class="grid">
+            <label>Content date<input id="approved-video-date" type="date" required></label>
+            <label>Content slot<select id="approved-video-slot"><option value="morning">Morning - 6 am</option><option value="afternoon">Afternoon - noon</option><option value="late_afternoon">Late afternoon</option><option value="evening">Evening - 8 pm</option></select></label>
+          </div>
+          <button id="start-approved-video" type="submit">Start Video</button>
+          <p id="approved-video-status" role="status" aria-live="polite"></p>
+          <details id="approved-script-details" hidden><summary>Saved spoken script</summary><pre id="approved-video-script" style="white-space:pre-wrap;overflow-wrap:anywhere"></pre></details>
+          <p><a href="/content.html">Add scripts for a day or a whole week</a></p>
+        </form></details>
+        
+        <form id="project-form" class="form" novalidate>
+          <p class="script-hint">Paste your script below. Your saved presenter, global instructions and editing options are applied automatically.</p>
+          <details class="video-overrides">
+          <summary>Options for this video</summary>
+          <label>
+            <span>Video Title</span>
+            <input id="title" name="title" type="text" placeholder="Give this video a title" autocomplete="off">
+          </label>
+
+          <div class="grid">
+            <label>
+              <span>Aspect Ratio</span>
+              <select id="aspectRatio" name="aspectRatio">
+                <option value="9:16">9:16</option>
+                <option value="16:9">16:9</option>
+              </select>
+            </label>
+
+            <label>
+              <span>Reference Image (optional: replaces the saved presenter for this video)</span>
+              <input id="referenceImage" name="referenceImage" type="file" accept="image/*">
+            </label>
+          </div>
+
+          <label>
+            <span>Global instructions override (optional, this video only)</span>
+            <textarea id="globalInstructions" name="globalInstructions" class="short-textarea" rows="5" placeholder="Leave empty to use your saved global instructions."></textarea>
+          </label>
+          </details>
+
+          <div class="mode-switch" role="radiogroup" aria-label="How to write the video">
+            <label class="mode-option">
+              <input type="radio" name="inputMode" value="script" checked>
+              <span>Script: scenes made automatically</span>
+            </label>
+            <label class="mode-option">
+              <input type="radio" name="inputMode" value="scenes">
+              <span>Write scenes by hand</span>
+            </label>
+          </div>
+
+          <div id="script-section" class="script-section"><details class="script-editor" open><summary>Spoken script <span class="summary-hint">Your presenter's exact words</span></summary>
+            <label>
+              <span>Script (exactly what the presenter says)</span>
+              <textarea id="script" name="script" rows="8" placeholder="If he only calls you at night and disappears during the day, my sister, you need to hear this. First sign: ..."></textarea>
+            </label>
+</details><details class="scene-breakdown"><summary>Scene breakdown <span class="summary-hint">Short clips joined into one video</span></summary><div class="scenes-heading">
+              <h2>Scenes</h2>
+              <span id="script-stats" class="scene-count"></span>
+            </div>
+            <p id="script-hint" class="script-hint">Type or paste the script. It is split into scenes of 4s, 6s, 8s or 10s, cut at full stops where possible.</p>
+            <ol id="script-preview" class="script-preview"></ol></details>
+          </div>
+
+          <div id="manual-section" class="manual-section" hidden>
+            <div class="scenes-heading">
+              <h2>Scenes</h2>
+              <span id="scene-count" class="scene-count"></span>
+            </div>
+
+            <div id="scene-list" class="scene-list"></div>
+
+            <button id="add-scene" class="secondary-button add-scene" type="button">+ Add Scene</button>
+          </div>
+
+<details class="editing-disclosure"><summary>Editing options <span class="summary-hint">Logo, captions &amp; audio</span></summary><p class="pacing-note">Automatic pacing is on. Slower clips are gently accelerated and long pauses are shortened.</p>          <div class="scenes-heading publishing-heading">
+            <h2>Editing</h2>
+            <span id="editing-status" class="scene-count">Applied after the scenes are joined</span>
+          </div>
+
+          <div class="edit-options">
+            <label class="platform-toggle">
+              <input type="checkbox" name="editLogo" checked>
+              <span>Add logo</span>
+            </label>
+            <label class="platform-toggle">
+              <input type="checkbox" name="editMusic" checked>
+              <span>Add background music</span>
+            </label>
+            <label class="platform-toggle">
+              <input type="checkbox" name="editCaptions" checked>
+              <span>Add captions</span>
+            </label>
+          </div>
+
+</details><details class="publishing-disclosure"><summary>Post details <span class="summary-hint">Captions, tags &amp; publishing options</span></summary>          <div class="scenes-heading publishing-heading">
+            <h2>Social Media Publishing</h2>
+            <span class="scene-count">Used by Generate &amp; Publish</span>
+          </div>
+
+          <p id="post-metadata-hint">The opening hook becomes your post caption. Relevant hashtags are chosen automatically from the script. Edit the script to update them.</p>
+          <fieldset class="platform-card" data-platform="facebook">
+            <label class="platform-toggle">
+              <input type="checkbox" name="facebookEnabled">
+              <span>Publish to Facebook</span>
+            </label>
+            <div class="platform-fields">
+              <label>
+                <span>Caption</span>
+                <textarea name="facebookCaption" class="short-textarea" rows="4" placeholder="Write the Facebook caption..."></textarea>
+              </label>
+              <label>
+                <span>Hashtags</span>
+                <input name="facebookHashtags" type="text" placeholder="#RelationshipCoach #RelationshipAdvice" autocomplete="off">
+              </label>
+            </div>
+          </fieldset>
+
+          <fieldset class="platform-card" data-platform="tiktok">
+            <label class="platform-toggle">
+              <input type="checkbox" name="tiktokEnabled">
+              <span>Publish to TikTok</span>
+            </label>
+            <div class="platform-fields">
+              <label>
+                <span>Caption</span>
+                <textarea name="tiktokCaption" class="short-textarea" rows="4" placeholder="Write the TikTok caption..."></textarea>
+              </label>
+              <label>
+                <span>Hashtags</span>
+                <input name="tiktokHashtags" type="text" placeholder="#RelationshipCoach #RelationshipAdvice" autocomplete="off">
+              </label>
+            </div>
+          </fieldset>
+
+          <fieldset class="platform-card" data-platform="youtube">
+            <label class="platform-toggle">
+              <input type="checkbox" name="youtubeEnabled">
+              <span>Publish to YouTube</span>
+            </label>
+            <div class="platform-fields">
+              <label>
+                <span>Title (required, max 100 characters)</span>
+                <input name="youtubeTitle" type="text" maxlength="100" placeholder="YouTube video title" autocomplete="off">
+              </label>
+              <label>
+                <span>Description</span>
+                <textarea name="youtubeDescription" class="short-textarea" rows="4" placeholder="Write the YouTube description..."></textarea>
+              </label>
+              <label>
+                <span>Hashtags</span>
+                <input name="youtubeHashtags" type="text" placeholder="#RelationshipCoach #RelationshipAdvice" autocomplete="off">
+              </label>
+            </div>
+          </fieldset>
+
+</details>
+          <p id="form-error" class="form-error" hidden></p>
+
+          <div class="form-actions">
+            <button id="generate-only-button" class="secondary-button action-secondary" type="submit" value="generate_only">
+              Generate Only
+            </button>
+            <button id="generate-publish-button" type="submit" value="generate_and_publish">
+              Generate &amp; Publish
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel status-panel">
+        <div class="status-heading">
+          <h2>Preview &amp; progress</h2>
+          <span class="status-dot" aria-hidden="true"></span>
+        </div>
+        <dl>
+          <div>
+            <dt>Project</dt>
+            <dd id="job-title">-</dd>
+          </div>
+          <div>
+            <dt>Status</dt>
+            <dd id="job-status">Idle</dd>
+          </div>
+          <div>
+            <dt>Overall</dt>
+            <dd>
+              <span id="job-overall">-</span>
+              <span class="progress-track" aria-hidden="true"><span id="job-progress" class="progress-fill"></span></span>
+            </dd>
+          </div>
+          <div>
+            <dt>Message</dt>
+            <dd id="job-message">Add your scenes and generate.</dd>
+          </div>
+          <div id="error-row" hidden>
+            <dt>Error</dt>
+            <dd id="job-error">-</dd>
+          </div>
+        </dl>
+
+        <ol id="scene-progress" class="scene-progress"></ol>
+        <p id="phase-message" class="phase-message" hidden></p>
+
+        <ol id="pipeline-progress" class="scene-progress pipeline-progress" hidden></ol>
+
+<div class="preview-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="3" y="5" width="14" height="14" rx="3"/><path d="m17 9 4-2v10l-4-2"/></svg><strong>Your video preview</strong><span>The finished edit will appear here.</span></div>
+        <video id="video-preview" controls hidden></video>
+        <p id="editing-summary" class="editing-summary" hidden></p><details id="pacing-report" class="pacing-report" hidden><summary>Automatic pacing report</summary><div id="pacing-report-body"></div></details>
+        <div class="result-actions">
+          <a id="download-link" class="download" hidden download>Download Final Video</a>
+          <a id="joined-link" class="secondary-button download-secondary" hidden download>Unedited version</a>
+        </div>
+
+        <div id="cloudinary-row" class="cloudinary-row" hidden>
+          <span class="cloudinary-label">Cloudinary URL</span>
+          <div class="cloudinary-url">
+            <a id="cloudinary-link" target="_blank" rel="noopener"></a>
+            <button id="copy-cloudinary" class="secondary-button" type="button">Copy</button>
+          </div>
+        </div>
+
+        <button id="retry-publishing" class="secondary-button retry-button" type="button" hidden>Retry Failed Platforms</button>
+        <button id="resume-job" class="secondary-button retry-button" type="button" hidden>Resume Existing Job</button>
+        <p class="job-id">Job ID: <span id="job-id">-</span></p>
+      </section>
+
+      <details class="panel brand-panel" id="brand-settings">
+        <summary>Saved video defaults — update presenter, instructions, logo or music</summary>
+        <div class="status-heading">
+          <h2>Brand</h2>
+          <span class="scene-count">Used for every video</span>
+        </div>
+
+        <div class="saved-instructions">
+          <label><span>Default global instructions</span>
+            <textarea id="default-global-instructions" rows="8" maxlength="30000" placeholder="Instructions used automatically for every new script."></textarea>
+          </label>
+          <button id="save-default-instructions" type="button" class="secondary-button">Save Default Instructions</button>
+          <p id="defaults-message" class="account-message" aria-live="polite">Loading saved instructions...</p>
+        </div>
+        <div id="brand-list" class="brand-list">
+          <div class="brand-row" data-kind="presenter">
+            <div class="brand-main">
+              <strong>Presenter image</strong>
+              <span class="brand-state">Checking...</span>
+            </div>
+            <div class="brand-preview"></div>
+            <div class="brand-actions">
+              <input type="file" accept=".png,.jpg,.jpeg,.webp" aria-label="Upload presenter image">
+              <button class="secondary-button brand-remove" type="button" hidden>Remove</button>
+            </div>
+          </div>
+          <div class="brand-row" data-kind="logo">
+            <div class="brand-main">
+              <strong>Logo</strong>
+              <span class="brand-state">Checking...</span>
+            </div>
+            <div class="brand-preview"></div>
+            <div class="brand-actions">
+              <input type="file" accept=".png,.webp,.jpg,.jpeg" aria-label="Upload logo">
+              <button class="secondary-button brand-remove" type="button" hidden>Remove</button>
+            </div>
+          </div>
+          <div class="brand-row" data-kind="music">
+            <div class="brand-main">
+              <strong>Background music</strong>
+              <span class="brand-state">Checking...</span>
+            </div>
+            <div class="brand-preview"></div>
+            <div class="brand-actions">
+              <input type="file" accept=".mp3,.m4a,.aac,.wav,.ogg,.flac" aria-label="Upload background music">
+              <button class="secondary-button brand-remove" type="button" hidden>Remove</button>
+            </div>
+          </div>
+        </div>
+        <p id="brand-message" class="account-message">Updates here become the defaults for new videos. Existing jobs keep their saved instructions.</p>
+      </details>
+
+      <details class="panel accounts-panel" id="account-settings"><summary>Generation accounts <span class="summary-hint">Saved sessions &amp; sign-in</span></summary>
+        <div class="status-heading">
+          <h2>Accounts</h2>
+          <button id="refresh-accounts" class="secondary-button" type="button">Refresh</button>
+        </div>
+
+        <form id="account-login-form" class="account-form">
+          <label>
+            <span>Account ID</span>
+            <input id="account-id" name="accountId" type="text" placeholder="account-1" autocomplete="off" required>
+          </label>
+          <button type="submit">Open Login</button>
+        </form>
+
+        <p id="account-message" class="account-message">Saved sessions live in browser profile folders.</p>
+        <div id="accounts-list" class="accounts-list"></div>
+      </details>
+    </main></div>
+
+
+    <script type="module" src="/studio-shell.js"></script><script type="module" src="/app.js"></script>
+  </body>
+</html>

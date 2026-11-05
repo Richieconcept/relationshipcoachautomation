@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: relationshipcoachautomation
+    runtime: docker
+    plan: free
+    branch: main
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: HEADLESS
+        value: "true"
+      - key: ALLOW_REMOTE_CONTROLS
+        value: "true"
+      - key: TRUST_PROXY
+        value: "true"
+      - key: PORT
+        value: "10000"

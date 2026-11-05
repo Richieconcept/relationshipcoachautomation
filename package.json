@@ -1,0 +1,39 @@
+{
+  "name": "flow-video-automation",
+  "version": "1.0.0",
+  "description": "Local proof-of-concept for automating Google Flow video generation with Playwright.",
+  "main": "src/server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "login:chrome": "node scripts/open-login-chrome.js",
+    "login:account": "node scripts/open-login-chrome.js",
+    "test:browser": "node scripts/open-flow.js",
+    "test:flow-controls": "node --test scripts/flow-reference.test.js scripts/flow-controls.test.js",
+    "test:recovery": "node --test scripts/flow-recovery.test.js scripts/job-recovery.test.js scripts/scene-queue.test.js",
+    "test:editor": "node --test scripts/editor.test.js",
+    "test:content": "node --test scripts/content.test.js",
+    "test:content-browser": "node --test scripts/content-browser.test.js",
+    "inspect:flow": "node scripts/inspect-flow.js",
+    "check:ffmpeg": "node scripts/check-ffmpeg.js",
+    "edit:project": "node scripts/edit-project.js",
+    "test:cloudinary": "node scripts/test-cloudinary.js",
+    "buffer:channels": "node scripts/buffer-channels.js",
+    "test:buffer": "node scripts/test-buffer-post.js",
+    "test:post-metadata": "node --test scripts/post-metadata.test.js scripts/post-metadata-browser.test.js",
+    "test:start-video": "node --test scripts/start-video-browser.test.js",
+    "test:manual-content": "node --test scripts/manual-content.test.js scripts/manual-content-browser.test.js",
+    "test:scheduling": "node --test scripts/scheduled-production.test.js",
+    "test:studio-design": "node --test scripts/studio-design.test.js",
+    "test:planner": "node --test scripts/content-planner.test.js scripts/content-planner-browser.test.js",
+    "test:automatic-posting": "node --test scripts/automatic-posting.test.js scripts/automatic-posting-browser.test.js"
+  },
+  "dependencies": {
+    "cloudinary": "^2.11.0",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "multer": "^2.0.2",
+    "playwright": "^1.49.1"
+  }
+}
