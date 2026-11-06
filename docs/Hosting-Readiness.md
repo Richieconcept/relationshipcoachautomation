@@ -112,3 +112,5 @@ DEFAULT_PUBLISH_PLATFORMS=facebook,youtube restores the owner's preferred destin
 At the owner's request, the newly signed-in local account-3 profile passed a read-only Flow workspace check and replaced account-2 in Render's private FLOW_SESSION_STATE, FLOW_ACCOUNT and FLOW_ACCOUNTS settings. Only account-3 is enabled in the deployment. Local profiles were retained. No video generation or publishing was requested during the replacement.
 
 The most recent previous generation log failed with FLOW_SETTING_NOT_FOUND for duration 10s; that is a separate Flow settings issue, so account replacement alone does not prove full generation works.
+
+Deployment dep-dbmsu3ei0phs73corgig reached live. The hosted account inventory lists only account-3, and its private Google check returned ready=true with the Flow workspace accessible. Buffer, Cloudinary and Gemini also passed their connection checks.
