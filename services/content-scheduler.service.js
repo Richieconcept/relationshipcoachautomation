@@ -19,7 +19,7 @@ export class ContentScheduler {
   }
   snapshot() {
     const items = Object.values(this.store.state.items).sort((a, b) => b.publishAt.localeCompare(a.publishAt));
-    return { scheduler: { lastTickAt: this.lastTickAt, intervalSeconds: 5 }, settings: this.store.state.settings, timezone: 'Africa/Lagos', slots: this.store.state.settings.slots || SLOTS,
+    return { scheduler: { lastTickAt: this.lastTickAt, intervalSeconds: 5 }, settings: this.store.state.settings, publishingDefaults: { platforms: config.defaultPublishPlatforms }, timezone: 'Africa/Lagos', slots: this.store.state.settings.slots || SLOTS,
       items: items.map(item => ({ ...item, generationStartsAt: generationStartsAt(item, this.store.state.settings), ...(!item.jobId && item.script ? buildPostMetadata(item.script) : {}), job: item.jobId ? this.jobSummary(this.jobById(item.jobId)) : null })) };
   }
   jobSummary(job) { return job ? { id: job.id, status: job.status, message: job.message, errorCode: job.errorCode || null, failure: job.status === 'failed' ? generationFailureDetails(job.errorCode, job.providerMessage) : null, currentScene: job.currentScene, totalScenes: job.scenes?.length || 0, completedScenes: job.completedScenes || 0, scenes: (job.scenes || []).map(scene => ({ number: scene.number, status: scene.status, attempts: scene.attempts, retryAt: scene.retryAt || null, message: scene.message })), pacing: job.pacing || null, videoUrl: job.finalVideoUrl, canResume: ['failed', 'interrupted'].includes(job.status) } : null; }

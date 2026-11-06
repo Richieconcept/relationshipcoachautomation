@@ -34,6 +34,7 @@ function listFromEnv(value) {
 
 export const config = {
   rootDir,
+  defaultPublishPlatforms: [...new Set(listFromEnv(process.env.DEFAULT_PUBLISH_PLATFORMS))].filter(platform => ['facebook', 'youtube', 'tiktok'].includes(platform)),
   allowRemoteControls: booleanFromEnv(process.env.ALLOW_REMOTE_CONTROLS, false),
   trustProxy: booleanFromEnv(process.env.TRUST_PROXY, false),
   port: numberFromEnv(process.env.PORT, 3000),

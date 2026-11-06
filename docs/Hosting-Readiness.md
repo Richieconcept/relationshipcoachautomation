@@ -101,3 +101,7 @@ The owner explicitly approved transferring the account-2 Google session to Rende
 Deployment dep-dbmsbpu7bikc73bsm15g reached live. The hosted private check returned ready=true for account-2: Google Flow is signed in and its workspace is accessible. Buffer (Facebook and YouTube), Cloudinary and Gemini also returned successful connection checks. No test video was generated and no social post was created. A complete Generate & Publish run has therefore not yet been verified.
 
 The Google session seed and provider credentials are stored in Render's environment and are available after container replacement. Render Free's generated files and runtime job/checkpoint history remain ephemeral; this session setup does not make the filesystem persistent. Google may expire or revoke a session or require verification later. Do not promise permanent authentication or bypass such challenges.
+
+## Manual destination selection
+
+DEFAULT_PUBLISH_PLATFORMS=facebook,youtube restores the owner's preferred destinations in a fresh manual form or a legacy draft that never had a platform choice. The preferred list is stored in the hosted environment so it survives a restart. Explicit saved choices, including deliberately deselecting every platform, are preserved. Validation opens the destination controls when no platform is selected. This preference does not enable scheduling, turn on automatic posting, submit generation, or publish anything.

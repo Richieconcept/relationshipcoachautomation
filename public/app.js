@@ -144,6 +144,7 @@ function setBusy(busy) {
 const formError = document.querySelector('#form-error');
 
 const DRAFT_KEY = 'flow-project-draft';
+let publishingSelectionChosen = false;
 const LAST_JOB_KEY = 'flow-last-project-job';
 
 function storageGet(key) {
@@ -319,6 +320,7 @@ function saveDraft() {
     script: scriptInput.value,
     editing: readEditing(),
     scenes: sceneItems().map((item) => item.querySelector('textarea').value),
+    publishingSelectionChosen,
     publishing: publishingFieldValues()
   }));
 }
@@ -330,6 +332,9 @@ function loadDraft() {
   } catch {
     draft = null;
   }
+
+  publishingSelectionChosen = draft?.publishingSelectionChosen === true
+    || ['facebookEnabled', 'youtubeEnabled', 'tiktokEnabled'].some(name => draft?.publishing?.[name] === true);
 
   // A project label from an earlier video must never become the next video's title.
   titleInput.value = '';
@@ -360,7 +365,10 @@ addSceneButton.addEventListener('click', () => {
 });
 
 projectForm.addEventListener('input', () => { updatePostMetadata(); saveDraft(); });
-projectForm.addEventListener('change', saveDraft);
+projectForm.addEventListener('change', event => {
+  if (['facebookEnabled', 'youtubeEnabled', 'tiktokEnabled'].includes(event.target.name)) publishingSelectionChosen = true;
+  saveDraft();
+});
 scriptInput.addEventListener('input', scheduleScriptPreview);
 modeInputs.forEach((input) => input.addEventListener('change', () => { applyMode(); updatePostMetadata(); }));
 
@@ -774,6 +782,10 @@ projectForm.addEventListener('submit', async (event) => {
     const problems = publishingProblems(publishing);
     if (problems.length > 0) {
       showFormError(problems.join(' '));
+      if (!Object.values(publishing).some(platform => platform.enabled)) {
+        document.querySelector('.publishing-disclosure').open = true;
+        field('facebookEnabled').focus();
+      }
       return;
     }
   }
@@ -1073,11 +1085,17 @@ loadAccounts().catch((error) => {
   accountMessage.textContent = error.message;
 });
 
-function applyAutomaticPosting(settings){
+function applyAutomaticPosting(settings, defaultPlatforms = []){
  const primary=document.querySelector('#generate-only-button');const secondary=document.querySelector('#generate-publish-button');
  const enabled=Boolean(settings.autoPublish);primary.value=enabled?'generate_and_publish':'generate_only';primary.textContent=enabled?'Create & publish':'Generate Only';secondary.hidden=enabled;
  if(enabled)for(const platform of ['facebook','tiktok','youtube']){const input=projectForm.elements[platform+'Enabled'];if(input){input.checked=settings.platforms.includes(platform);input.dispatchEvent(new Event('change',{bubbles:true}));}}
+ if (!enabled && !publishingSelectionChosen && defaultPlatforms.length) {
+   const values = Object.fromEntries(['facebook','tiktok','youtube'].map(platform => [platform+'Enabled', defaultPlatforms.includes(platform)]));
+   restorePublishingFields(values);
+   publishingSelectionChosen = true;
+   saveDraft();
+ }
  projectForm.dataset.automaticPosting=String(enabled);
 }
 window.addEventListener('publishing-settings-changed',event=>applyAutomaticPosting(event.detail));
-fetch('/api/content').then(response=>response.json()).then(data=>{if(data.success)applyAutomaticPosting(data.settings);}).catch(()=>{});
+fetch('/api/content').then(response=>response.json()).then(data=>{if(data.success)applyAutomaticPosting(data.settings, data.settings.platforms?.length ? data.settings.platforms : (data.publishingDefaults?.platforms || []));}).catch(()=>{});

@@ -17,3 +17,5 @@ services:
         value: "true"
       - key: PORT
         value: "10000"
+      - key: DEFAULT_PUBLISH_PLATFORMS
+        value: facebook,youtube
