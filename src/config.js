@@ -40,6 +40,7 @@ export const config = {
   flowUrl: process.env.FLOW_URL || 'https://labs.google/fx/tools/flow',
   flowProjectUrl: process.env.FLOW_PROJECT_URL || '',
   headless: booleanFromEnv(process.env.HEADLESS, false),
+  closeBrowserAfterGeneration: booleanFromEnv(process.env.CLOSE_BROWSER_AFTER_GENERATION, false),
   chromiumSandbox: booleanFromEnv(process.env.CHROMIUM_SANDBOX, true),
   flowAccount: process.env.FLOW_ACCOUNT || '',
   flowAccounts: listFromEnv(process.env.FLOW_ACCOUNTS),

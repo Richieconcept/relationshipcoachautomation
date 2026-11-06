@@ -126,3 +126,10 @@ export async function verifyPublicVideoUrl(url) {
     contentLength: Number(response.headers.get('content-length')) || null
   };
 }
+
+// Authenticated metadata request only: no upload, deletion or publishing.
+export async function verifyCloudinaryConnection() {
+  await configureSdk();
+  const result = await cloudinary.api.ping();
+  return result.status === 'ok';
+}

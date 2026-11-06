@@ -8,7 +8,7 @@ import {
   markAccountAvailable,
   setAccountStatus
 } from '../src/accounts.js';
-import { closeBrowser, closeFlowTab, getFlowPageForAccount } from '../src/browser.js';
+import { closeBrowser, finishFlowGeneration, getFlowPageForAccount } from '../src/browser.js';
 import { config } from '../src/config.js';
 import { buildVideoUrl, isMp4Buffer, isMp4File, videoPathForJob } from '../src/downloads.js';
 import { FlowAutomationError, FLOW_SELECTORS } from '../src/flow.js';
@@ -1348,7 +1348,7 @@ export async function generateVideo(job) {
       retryableCodes: [...INFRASTRUCTURE_ERROR_CODES, ...GENERATION_RETRY_CODES]
     });
 
-    await closeFlowTab().catch(error => logger.warn('Could not close the completed Flow tab', { message: error.message }));
+    await finishFlowGeneration().catch(error => logger.warn('Could not close the completed Flow tab', { message: error.message }));
     updateJob(job.id, 'completed', {
       accountId,
       message: 'Video generation completed.',

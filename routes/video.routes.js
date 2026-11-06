@@ -1,3 +1,6 @@
+import { timingSafeEqual } from 'node:crypto';
+import { enqueueFlowWork } from '../src/flow-lane.js';
+import { checkCloudGoogleSession, checkCloudServices } from '../services/cloud-readiness.service.js';
 import express from 'express';
 import multer from 'multer';
 import path from 'node:path';
@@ -32,6 +35,25 @@ const upload = multer({
   limits: {
     fileSize: 10 * 1024 * 1024
   }
+});
+
+function privateCloudSetup(req, res, next) {
+  const expected = process.env.CLOUD_SETUP_TOKEN || '';
+  const provided = String(req.get('authorization') || '').replace(/^Bearer /, '');
+  const left = Buffer.from(expected); const right = Buffer.from(provided);
+  if (!expected || left.length !== right.length || !timingSafeEqual(left, right)) return res.status(403).json({ success: false, message: 'Private cloud setup check.' });
+  next();
+}
+
+router.post('/cloud/check-services', privateCloudSetup, async (req, res) => {
+  const result = await checkCloudServices();
+  res.json({ success: result.buffer && result.cloudinary, ...result });
+});
+
+router.post('/cloud/check-google', privateCloudSetup, async (req, res) => {
+  if (hasActiveGeneration()) return res.status(409).json({ success: false, message: 'Wait for the current video job to finish.' });
+  const result = await enqueueFlowWork(checkCloudGoogleSession);
+  return res.json({ success: result.ready, ...result });
 });
 
 router.post('/generate', upload.single('referenceImage'), generateVideoController);

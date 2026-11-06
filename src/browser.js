@@ -1,3 +1,4 @@
+import { restoreGoogleSession } from '../services/cloud-google-session.service.js';
 import { chromium } from 'playwright';
 import { getActiveAccountId, getAccountProfileDir } from './accounts.js';
 import { config } from './config.js';
@@ -36,6 +37,10 @@ export async function getBrowserContext(accountId = getActiveAccountId()) {
         chromiumSandbox: config.chromiumSandbox,
         viewport: { width: 1440, height: 1000 }
       });
+    });
+    contextPromise = contextPromise.then(async context => {
+      try { await restoreGoogleSession(context, accountId, profileDir); return context; }
+      catch (error) { await context.close().catch(() => {}); throw error; }
     });
     const launched = contextPromise;
     const reset = () => {
@@ -84,4 +89,10 @@ export async function closeBrowser() {
   contextAccountId = null;
   const context = await closing.catch(() => null);
   if (context) await context.close();
+}
+
+// Cloud instances release Chrome before FFmpeg starts to reduce peak memory.
+export async function finishFlowGeneration() {
+  if (config.closeBrowserAfterGeneration) await closeBrowser();
+  else await closeFlowTab();
 }

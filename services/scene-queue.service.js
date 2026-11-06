@@ -1,7 +1,7 @@
 import { RETRYABLE_SCENE_CODES, productionWindowError } from './production-policy.service.js';
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { closeBrowser, closeFlowTab } from '../src/browser.js';
+import { closeBrowser, finishFlowGeneration } from '../src/browser.js';
 import { config } from '../src/config.js';
 import { enqueueFlowWork, flowLaneLength } from '../src/flow-lane.js';
 import { getJob, updateJob, updateScene } from '../src/jobs.js';
@@ -289,7 +289,7 @@ export async function runProject(jobId, { generateScene = generateFlowScene, wai
     }
 
     logger.info(`Project ${job.id}: all ${total} scenes completed`);
-    await closeFlowTab().catch(error => logger.warn('Could not close the completed Flow tab', { message: error.message }));
+    await finishFlowGeneration().catch(error => logger.warn('Could not close the completed Flow tab', { message: error.message }));
     await assembleProject(job);
   } catch (error) {
     logger.error(`Project ${job.id} failed`, { message: error.message, stack: error.stack });

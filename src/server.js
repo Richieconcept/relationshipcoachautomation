@@ -1,3 +1,4 @@
+import { closeBrowser } from './browser.js';
 import { startPublicationMonitor } from '../services/publication-monitor.service.js';
 import { closeChatgptBrowser } from '../services/chatgpt-browser.service.js';
 import express from 'express';
@@ -67,7 +68,7 @@ async function shutdown(signal) {
   server.close();
   const deadline = setTimeout(() => process.exit(1), 15000);
   deadline.unref();
-  try { await closeChatgptBrowser({ shutdown: true }); }
+  try { await Promise.all([closeChatgptBrowser({ shutdown: true }), closeBrowser()]); }
   catch (error) { logger.warn('ChatGPT browser shutdown failed', { error: error.message }); }
   clearTimeout(deadline);
   process.exit(0);

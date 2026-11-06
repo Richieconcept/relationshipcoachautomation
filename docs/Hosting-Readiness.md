@@ -83,3 +83,11 @@ Verified against the live service: HTTP health response, studio HTML, manual scr
 No Google browser session, Buffer/Cloudinary credentials, local job history or recovery checkpoints were migrated. This is a working hosted studio/runtime test, not a verified cloud generation-and-publishing workflow. Google login needs a supported cloud session workflow, and free Render runtime changes remain ephemeral. The dashboard has no app login, as requested.
 
 Deployment used the official Render CLI v2.35.0 after the installed Render connection returned Unknown tool errors. CLI authorization was completed by the owner. The CLI binary and local authorization configuration are under ignored tmp/ paths; neither belongs in Git or the Docker image.
+
+## Cloud connection setup — 6 November 2026
+
+The service's private environment now contains the saved Cloudinary, Buffer and Gemini credentials plus portable editing/generation settings. Local Windows paths were excluded. The environment deployment reached live. Automatic scheduling remains disabled.
+
+Private authenticated setup checks verify provider connections and Google readiness without creating a video or social post. Hosted Chrome can close before FFmpeg starts to reduce peak memory. Optional FLOW_SESSION_STATE supports a compressed Google/Flow session in Render's private environment; it is never served by an API, committed, or included in logs. It seeds only its matching account. Google can still expire the session or require verification.
+
+Automatic approval review rejected the attempted Google session migration because explicit authorization to transmit those session credentials to Render had not yet been given. No Google cookies were transferred. The remaining transfer requires owner approval; this does not authorize bypassing Google verification, unusual-activity warnings or policy refusals.
