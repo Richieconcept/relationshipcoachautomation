@@ -1007,6 +1007,7 @@ export async function waitForSceneResult(page, checkpoint, prompt, onStatus, rem
   const startedAt = Date.now();
   let readyKey = null;
   let progress = null;
+  let confirmed = false;
   const missing = new MissingSceneTracker();
   const rejectedCandidates = [];
   while (Date.now() - startedAt < config.generationTimeoutMs) {
@@ -1069,6 +1070,11 @@ export async function waitForSceneResult(page, checkpoint, prompt, onStatus, rem
         continue;
       }
     }
+    if (!confirmed && (percent !== null || (ready && verified))) {
+      confirmed = true;
+      logger.info('Flow scene confirmed by video result', { accountId: checkpoint.accountId, evidence: percent !== null ? 'progress' : 'verified-result', recovering });
+      onStatus('generating', recovering ? 'Existing Flow scene confirmed; checking its result.' : 'Flow confirmed the scene through video progress or a matching result.');
+    }
     missing.reset();
     if (!checkpoint.target || checkpoint.target.src !== tile.src || checkpoint.target.thumbnail !== tile.thumbnail || checkpoint.target.verified !== verified) {
       const target = { src: tile.src, thumbnail: tile.thumbnail, mediaId: tile.mediaId, text: tile.text, verified };
@@ -1105,9 +1111,18 @@ async function runFlowSceneAttempt(options, accountId) {
   let page = null;
   const startedAt = Date.now();
   const networkFailures = [];
+  const submissionResponses = [];
+  let generateClickAttempted = false;
   const recordResponse = (response) => {
-    if (response.status() < 400 || !['xhr', 'fetch'].includes(response.request().resourceType())) return;
+    if (!['xhr', 'fetch'].includes(response.request().resourceType())) return;
     const url = new URL(response.url());
+    if (generateClickAttempted && ['POST', 'PUT', 'PATCH'].includes(response.request().method())) {
+      const outcome = { method: response.request().method(), status: response.status(), endpoint: url.origin + url.pathname };
+      submissionResponses.push(outcome);
+      if (submissionResponses.length > 30) submissionResponses.shift();
+      logger.info('Flow network response during submission attempt', outcome);
+    }
+    if (response.status() < 400) return;
     networkFailures.push({ status: response.status(), endpoint: `${url.origin}${url.pathname}` });
     if (networkFailures.length > 30) networkFailures.shift();
   };
@@ -1161,9 +1176,10 @@ async function runFlowSceneAttempt(options, accountId) {
         const expired = productionWindowError(productionDeadline);
         if (expired) throw expired;
         onStatus('submitting', 'Submitting the scene once; progress is saved before clicking Generate.');
+        generateClickAttempted = true;
         await startGeneration(page);
         const screenshotPath = await saveScreenshot(page, screenshotPrefix(), 'after-submit', logLabel);
-        onStatus('generating', 'Waiting for the submitted Flow scene.', { screenshotPath });
+        onStatus('submitting', 'Generate was clicked. Waiting for Flow to confirm video generation.', { screenshotPath });
       },
       wait: (checkpoint, rememberTarget) => waitForSceneResult(page, checkpoint, prompt, onStatus, rememberTarget, recovering, productionDeadline),
       download: (partialPath, target) => downloadGeneratedVideo(page, partialPath, target.src, logLabel, target)
@@ -1179,7 +1195,7 @@ async function runFlowSceneAttempt(options, accountId) {
       }))).catch(() => []);
       await fs.writeFile(path.join(config.screenshotDir, `${errorPrefix}_diagnostics.json`), JSON.stringify({
         accountId, code, elapsedSeconds: Math.round((Date.now() - startedAt) / 1000),
-        networkFailures, controls
+        generateClickAttempted, submissionResponses, networkFailures, controls
       }, null, 2)).catch(() => {});
     }
 

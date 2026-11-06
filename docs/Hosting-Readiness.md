@@ -119,3 +119,8 @@ Deployment dep-dbmsu3ei0phs73corgig reached live. The hosted account inventory l
 ### Bounded scene recovery (2026-11-06)
 
 Transient scene failures now close the owned Flow browser before retrying, including closing it on the final failure. Scene attempts are finite even if the legacy persistent-retry flag is enabled. Hosted limits are six total scene attempts, three download-recovery attempts per result, and one replacement generation per scene. Replacement counts survive process restarts through saved checkpoints; Render free storage can still lose checkpoints on restart. When exhausted, SCENE_RETRY_EXHAUSTED prevents scheduler auto-resumption and preserves completed scenes. Google unusual-activity, sign-in and policy errors stop immediately without automatic account switching or resubmission. No Google account transfer is part of this change.
+
+
+### Submission confirmation reporting (2026-11-06)
+
+A Generate button click is now reported as submitting while Flow confirmation is pending. Only video progress or a prompt-verified matching video result changes the scene status to generating. An uploaded storyboard or failed/unusual-activity tile does not confirm generation. Post-click HTTP response diagnostics record method, status and endpoint without query strings, request bodies, headers or cookies. Historical click logs cannot prove Google accepted a generation request. Four isolated browser tests passed; no live video request was submitted during validation.

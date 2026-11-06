@@ -113,5 +113,21 @@ test('recovery checks multiple candidates by prompt and selects the matching vid
  assert.deepEqual(await page.evaluate(()=>window.checked),['wrong','wanted']);
  assert.equal(await page.evaluate(()=>Boolean(window.submitted)),false);
  assert.ok(statuses.some(s=>/different prompt/.test(s.message)));
+ assert.ok(statuses.some(s=>s.status==='generating' && /confirmed/.test(s.message))); 
  }finally{config.pollIntervalMs=oldPoll;await browser.close();}
 });
+
+ test('storyboard upload or failed tile is never reported as confirmed generation',async()=>{
+ const {config}=await import('../src/config.js'); const oldTimeout=config.generationTimeoutMs;config.generationTimeoutMs=30;
+ const browser=await chromium.launch({channel:'chrome',headless:true});
+ try {
+ const page=await browser.newPage();const statuses=[];
+ await page.setContent('<flow-image-tile>Uploaded storyboard</flow-image-tile>');
+ await assert.rejects(waitForSceneResult(page,{baseline:[],target:null},'Scene',(status,message)=>statuses.push({status,message}),async()=>{},false,null),error=>error.code==='GENERATION_TIMEOUT');
+ assert.equal(statuses.some(s=>s.status==='generating'),false);
+ config.generationTimeoutMs=5000;statuses.length=0;
+ await page.setContent('<flow-video-tile data-media-id="failed">warning Failed We noticed some unusual activity. Please visit the Help Center.</flow-video-tile>');
+ await assert.rejects(waitForSceneResult(page,{baseline:[],target:null},'Scene',(status,message)=>statuses.push({status,message}),async()=>{},false,null),error=>error.code==='FLOW_UNUSUAL_ACTIVITY');
+ assert.equal(statuses.some(s=>s.status==='generating'),false);
+ }finally{config.generationTimeoutMs=oldTimeout;await browser.close();}
+ });
