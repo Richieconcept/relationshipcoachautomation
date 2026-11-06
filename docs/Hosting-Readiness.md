@@ -67,3 +67,19 @@ Buffer confirmation schema: https://developers.buffer.com/reference.html (post q
 Dockerfile now installs Chromium, its Linux dependencies, FFmpeg and fonts. render.yaml specifies a free Docker web service with /health and manual scheduling defaults. ALLOW_REMOTE_CONTROLS and TRUST_PROXY are explicit hosted settings; no app login has been added at the owner's request. Hosted controls are public. The repository and image exclude credentials, Google profiles, generated media and runtime state. Brand assets are included.
 
 This is not yet verified end to end on Render. A Git push does not migrate Google's Windows browser session. The Windows login helper has not been replaced by a cloud login workflow. The free Blueprint has no persistent disk. Do not enable live publishing on an unrestricted public test instance.
+
+## Live Render test deployment — 6 November 2026
+
+- Workspace: My Workspace (tea-cu3qg9a3esus73bks0tg).
+- Service: relationshipcoachautomation (srv-dbml6mrm8hqs73aphfe0).
+- Website: https://relationshipcoachautomation.onrender.com
+- Dashboard: https://dashboard.render.com/web/srv-dbml6mrm8hqs73aphfe0
+- Compute plan: free; region: Oregon; runtime: Docker; health check: /health. No paid plan, database or persistent disk was created.
+- Initial deployed commit: a566d80b3cae3cf4cc2a43a39ffe52c79b1d88c1.
+- Initial deploy: dep-dbml6n3m8hqs73aphg3g, confirmed live.
+
+Verified against the live service: HTTP health response, studio HTML, manual script mode, automatic scheduling disabled, HTTPS same-origin content controls, blocked cross-origin content controls, saved global instructions, and matching SHA-256 hashes for presenter.jpg, music.mp3 and logo.png. Runtime logs confirm FFmpeg and FFprobe are available. Chromium installation passed during the Docker build; an authenticated Google generation was not run.
+
+No Google browser session, Buffer/Cloudinary credentials, local job history or recovery checkpoints were migrated. This is a working hosted studio/runtime test, not a verified cloud generation-and-publishing workflow. Google login needs a supported cloud session workflow, and free Render runtime changes remain ephemeral. The dashboard has no app login, as requested.
+
+Deployment used the official Render CLI v2.35.0 after the installed Render connection returned Unknown tool errors. CLI authorization was completed by the owner. The CLI binary and local authorization configuration are under ignored tmp/ paths; neither belongs in Git or the Docker image.
