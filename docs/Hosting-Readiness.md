@@ -93,3 +93,11 @@ Private authenticated setup checks verify provider connections and Google readin
 Automatic approval review rejected the attempted Google session migration because explicit authorization to transmit those session credentials to Render had not yet been given. No Google cookies were transferred. The remaining transfer requires owner approval; this does not authorize bypassing Google verification, unusual-activity warnings or policy refusals.
 
 Provider setup verification: deployment dep-dbms798u01pc739fkfi0 (commit 787ce46e8a0a535081aa043dafaa16b9498dc1af) reached live. Private provider checks returned buffer=true, cloudinary=true and gemini=true; Facebook and YouTube destinations verified. No video was generated or posted. Google readiness returned GOOGLE_LOGIN_REQUIRED because no Google session has been transmitted. Owner consent to the credential transfer is pending.
+
+## Google cloud session verified — 6 November 2026
+
+The owner explicitly approved transferring the account-2 Google session to Render's private environment. The scoped session transfer completed without printing cookies, writing them to Git, or deleting the local profile. FLOW_SESSION_STATE is private authenticated state; keep it secret. Only account-2 is enabled on the hosted service.
+
+Deployment dep-dbmsbpu7bikc73bsm15g reached live. The hosted private check returned ready=true for account-2: Google Flow is signed in and its workspace is accessible. Buffer (Facebook and YouTube), Cloudinary and Gemini also returned successful connection checks. No test video was generated and no social post was created. A complete Generate & Publish run has therefore not yet been verified.
+
+The Google session seed and provider credentials are stored in Render's environment and are available after container replacement. Render Free's generated files and runtime job/checkpoint history remain ephemeral; this session setup does not make the filesystem persistent. Google may expire or revoke a session or require verification later. Do not promise permanent authentication or bypass such challenges.
