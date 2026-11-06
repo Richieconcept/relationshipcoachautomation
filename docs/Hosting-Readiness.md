@@ -105,3 +105,10 @@ The Google session seed and provider credentials are stored in Render's environm
 ## Manual destination selection
 
 DEFAULT_PUBLISH_PLATFORMS=facebook,youtube restores the owner's preferred destinations in a fresh manual form or a legacy draft that never had a platform choice. The preferred list is stored in the hosted environment so it survives a restart. Explicit saved choices, including deliberately deselecting every platform, are preserved. Validation opens the destination controls when no platform is selected. This preference does not enable scheduling, turn on automatic posting, submit generation, or publish anything.
+
+
+### Replacement Google account (2026-11-06)
+
+At the owner's request, the newly signed-in local account-3 profile passed a read-only Flow workspace check and replaced account-2 in Render's private FLOW_SESSION_STATE, FLOW_ACCOUNT and FLOW_ACCOUNTS settings. Only account-3 is enabled in the deployment. Local profiles were retained. No video generation or publishing was requested during the replacement.
+
+The most recent previous generation log failed with FLOW_SETTING_NOT_FOUND for duration 10s; that is a separate Flow settings issue, so account replacement alone does not prove full generation works.
