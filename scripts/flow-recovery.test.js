@@ -121,13 +121,12 @@ test('a missing result is replaced on the next attempt and preserves original re
  await assert.rejects(recoverableScene(f.request,{...f.adapter,wait:async()=>{throw missingError();}},f.store),{code:'SCENE_RESULT_MISSING'});const saved=await f.store.read(f.outputPath);assert.equal(saved.stage,'result_missing');assert.equal(saved.replacementCount,1);assert.equal(saved.replacementHistory[0].target.thumbnail,'exact-scene');
  await recoverableScene(f.request,f.adapter,new SceneCheckpointStore(f.store.directory));assert.equal(f.calls.submit,2);const done=await f.store.read(f.outputPath);assert.equal(done.stage,'downloaded');assert.equal(done.fingerprint,'original-inputs');assert.equal(done.replacementCount,1);assert.equal(done.replacementHistory.length,1);
 }));
-test('missing-result replacements continue beyond three across process restarts and eventually succeed',()=>fixture(async f=>{
+test('replacement limit survives process restarts and stops further Generate clicks',()=>fixture(async f=>{
  const adapter={...f.adapter,wait:async()=>{throw missingError();}};
- for(let i=0;i<6;i++)await assert.rejects(recoverableScene(f.request,adapter,new SceneCheckpointStore(f.store.directory)),{code:'SCENE_RESULT_MISSING'});
- await recoverableScene(f.request,f.adapter,new SceneCheckpointStore(f.store.directory));
- assert.equal(f.calls.submit,7);
- const saved=await f.store.read(f.outputPath);
- assert.equal(saved.stage,'downloaded');assert.equal(saved.replacementCount,6);assert.equal(saved.replacementHistory.length,6);
+ await assert.rejects(recoverableScene(f.request,adapter,new SceneCheckpointStore(f.store.directory)),{code:'SCENE_RESULT_MISSING'});
+ await assert.rejects(recoverableScene(f.request,adapter,new SceneCheckpointStore(f.store.directory)),{code:'SCENE_RESULT_MISSING'});
+ await assert.rejects(recoverableScene(f.request,f.adapter,new SceneCheckpointStore(f.store.directory)),{code:'SCENE_RETRY_EXHAUSTED'});
+ assert.equal(f.calls.submit,2);assert.equal((await f.store.read(f.outputPath)).generationCount,2);
 }));
 
 test('missing-result confirmation waits for a loaded original project and repeated stable checks',async()=>{

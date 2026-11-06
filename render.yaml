@@ -19,3 +19,12 @@ services:
         value: "10000"
       - key: DEFAULT_PUBLISH_PLATFORMS
         value: facebook,youtube
+
+      - key: MAX_SCENE_RETRIES
+        value: "5"
+      - key: MAX_SCENE_REPLACEMENTS
+        value: "1"
+      - key: MAX_DOWNLOAD_RECOVERY_ATTEMPTS
+        value: "3"
+      - key: RETRY_SCENE_UNTIL_SUCCESS
+        value: "false"

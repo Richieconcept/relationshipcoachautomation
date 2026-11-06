@@ -101,6 +101,9 @@ export async function recoverableScene({ outputPath, fingerprint, accountId }, a
   }
 
   const recovering = needsRecovery(checkpoint);
+  if (!recovering && checkpoint && (checkpoint.generationCount || 1) >= config.maxSceneReplacements + 1) {
+    throw recoveryError('The scene replacement limit was reached. Saved progress is retained; review the failure before generating again.', 'SCENE_RETRY_EXHAUSTED');
+  }
   await adapter.open(recovering ? checkpoint : null);
   if (!recovering) {
     await adapter.prepare();
@@ -109,6 +112,7 @@ export async function recoverableScene({ outputPath, fingerprint, accountId }, a
       projectUrl: adapter.projectUrl(), baseline: await adapter.baseline(),
       submittedAt: new Date().toISOString(), target: null,
       downloadFailures: 0,
+      generationCount: checkpoint ? (checkpoint.generationCount || 1) + 1 : 1,
       replacementCount: checkpoint?.replacementCount || 0,
       replacementHistory: checkpoint?.replacementHistory || []
     };

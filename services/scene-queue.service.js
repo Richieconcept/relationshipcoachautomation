@@ -88,10 +88,10 @@ async function quarantineInvalidClip(filePath, attempt) {
   await fs.rename(filePath, target).catch(() => {});
 }
 
-export async function generateSceneWithRetries(job, scene, generateScene, wait = sleep, now = Date.now, validateClip = validateVideo) {
+export async function generateSceneWithRetries(job, scene, generateScene, wait = sleep, now = Date.now, validateClip = validateVideo, resetBrowser = closeBrowser) {
   const total = job.scenes.length;
-  const maxAttempts = config.retrySceneUntilSuccess ? Infinity : config.maxSceneRetries + 1;
-  const attemptSuffix = Number.isFinite(maxAttempts) ? ` of ${maxAttempts}` : ' (retry until successful)';
+  const maxAttempts = config.maxSceneRetries + 1;
+  const attemptSuffix = ` of ${maxAttempts}`;
   const previousAttempts = scene.attempts || 0;
   const prompt = buildScenePrompt(job.globalInstructions, scene.prompt);
   const outputPath = rawScenePath(job.id, scene.number);
@@ -147,6 +147,7 @@ export async function generateSceneWithRetries(job, scene, generateScene, wait =
     } catch (error) {
       lastError = error;
       lastCode = errorCodeOf(error);
+      await resetBrowser().catch(() => {});
 
       if (lastCode === 'VIDEO_INVALID') {
         await quarantineInvalidClip(outputPath, attempt);
@@ -154,6 +155,13 @@ export async function generateSceneWithRetries(job, scene, generateScene, wait =
 
       const canRetry = RETRYABLE_SCENE_CODES.has(lastCode) && !NON_RETRYABLE_SCENE_CODES.includes(lastCode) && attempt < maxAttempts;
       if (!canRetry) {
+        if (RETRYABLE_SCENE_CODES.has(lastCode) && attempt >= maxAttempts) {
+          lastError = recoveryError('Scene recovery stopped after ' + maxAttempts + ' attempts. Last failure (' + lastCode + '): ' + error.message + ' Review the failure before resuming.', 'SCENE_RETRY_EXHAUSTED');
+          lastError.cause = error;
+          lastError.screenshotPath = error.screenshotPath;
+          lastError.providerMessage = error.providerMessage;
+          lastCode = 'SCENE_RETRY_EXHAUSTED';
+        }
         break;
       }
 
@@ -165,7 +173,6 @@ export async function generateSceneWithRetries(job, scene, generateScene, wait =
         screenshotPath: error.screenshotPath || scene.screenshotPath,
         message: `Attempt ${previousAttempts + attempt} failed (${lastCode}): ${error.message} Retrying in ${delaySeconds}s (attempt ${previousAttempts + attempt + 1}${attemptSuffix}).`
       });
-      await closeBrowser().catch(() => {});
       await wait(job.productionDeadline ? Math.min(retryDelayMs, Math.max(0, Date.parse(job.productionDeadline)-now())) : retryDelayMs);
     }
   }

@@ -33,17 +33,28 @@ test('missing Flow settings fail once even when transient retries are persistent
 });
 
 
-test('retryable scene failures keep going beyond the old limit until validation succeeds', async()=>{
- const {config}=await import('../src/config.js');const {createProjectJob}=await import('../src/jobs.js');
+test('scene retry budget stays finite even with the legacy persistent setting enabled', async()=>{
+ const {config}=await import('../src/config.js'); const {createProjectJob}=await import('../src/jobs.js');
  const {generateSceneWithRetries}=await import('../services/scene-queue.service.js');
- const previous=config.retrySceneUntilSuccess;config.retrySceneUntilSuccess=true;
- try{
- const job=createProjectJob({title:'Persistent recovery',aspectRatio:'9:16',scenes:['Original scene']});let calls=0;const delays=[];
- const result=await generateSceneWithRetries(job,job.scenes[0],async options=>{
-  assert.equal(options.maxRetries,0);if(++calls<=7)throw Object.assign(new Error('Temporary failure'),{automationCode:'DOWNLOAD_FAILED'});
- },async ms=>{delays.push(ms);},Date.now,async()=>({duration:6,width:360,height:640}));
- assert.equal(result.ok,true);assert.equal(calls,8);assert.equal(job.scenes[0].status,'completed');assert.equal(job.scenes[0].attempts,8);assert.equal(delays.length,7);assert.ok(delays.every(ms=>ms>=10000&&ms<=60000));
- }finally{config.retrySceneUntilSuccess=previous;}
+ const {canAutoResume}=await import('../services/production-policy.service.js');
+ const previous=config.retrySceneUntilSuccess; config.retrySceneUntilSuccess=true;
+ try {
+  const job=createProjectJob({title:'Bounded recovery',aspectRatio:'9:16',scenes:['Original scene']}); let calls=0; let closed=0; const waits=[];
+  const result=await generateSceneWithRetries(job,job.scenes[0],async options=>{
+   assert.equal(closed,calls); assert.equal(options.maxRetries,0); calls++;
+   throw Object.assign(new Error('Temporary download failure'),{automationCode:'DOWNLOAD_FAILED'});
+  },async ms=>{assert.equal(closed,calls);waits.push(ms);},Date.now,async()=>({duration:6}),async()=>{closed++;});
+  assert.equal(calls,config.maxSceneRetries+1); assert.equal(closed,calls); assert.equal(waits.length,config.maxSceneRetries);
+  assert.equal(result.code,'SCENE_RETRY_EXHAUSTED'); assert.match(result.error.message,/DOWNLOAD_FAILED/);
+  assert.equal(canAutoResume({status:'failed',mode:'generate_only',errorCode:result.code}),false);
+ } finally {config.retrySceneUntilSuccess=previous;}
+});
+
+test('unusual activity closes the browser and stops without retrying or switching accounts', async()=>{
+ const {createProjectJob}=await import('../src/jobs.js'); const {generateSceneWithRetries}=await import('../services/scene-queue.service.js');
+ const job=createProjectJob({title:'Account warning',scenes:['Scene']}); let closed=0; let calls=0;
+ const result=await generateSceneWithRetries(job,job.scenes[0],async()=>{calls++;throw Object.assign(new Error('Google unusual activity'),{automationCode:'FLOW_UNUSUAL_ACTIVITY'});},async()=>{throw Error('No retry expected');},Date.now,async()=>{},async()=>{closed++;});
+ assert.equal(calls,1);assert.equal(closed,1);assert.equal(result.code,'FLOW_UNUSUAL_ACTIVITY');
 });
 
 test('persistent retries respect scheduled deadlines', async()=>{

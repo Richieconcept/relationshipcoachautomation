@@ -65,8 +65,9 @@ export const config = {
 
   // Multi-scene projects
   projectDownloadDir: resolveFromRoot(process.env.PROJECT_DOWNLOAD_DIR || './downloads/projects'),
-  maxSceneRetries: numberFromEnv(process.env.MAX_SCENE_RETRIES, 5),
-  retrySceneUntilSuccess: booleanFromEnv(process.env.RETRY_SCENE_UNTIL_SUCCESS, true),
+  maxSceneRetries: Math.min(10, Math.max(0, Math.floor(numberFromEnv(process.env.MAX_SCENE_RETRIES, 5)))),
+  maxSceneReplacements: Math.min(3, Math.max(0, Math.floor(numberFromEnv(process.env.MAX_SCENE_REPLACEMENTS, 1)))),
+  retrySceneUntilSuccess: booleanFromEnv(process.env.RETRY_SCENE_UNTIL_SUCCESS, false),
   maxDownloadRecoveryAttempts: Math.max(1, numberFromEnv(process.env.MAX_DOWNLOAD_RECOVERY_ATTEMPTS, 3)),
   sceneRetryDelayMs: 10000,
   ffmpegPath: process.env.FFMPEG_PATH || 'ffmpeg',

@@ -114,3 +114,8 @@ At the owner's request, the newly signed-in local account-3 profile passed a rea
 The most recent previous generation log failed with FLOW_SETTING_NOT_FOUND for duration 10s; that is a separate Flow settings issue, so account replacement alone does not prove full generation works.
 
 Deployment dep-dbmsu3ei0phs73corgig reached live. The hosted account inventory lists only account-3, and its private Google check returned ready=true with the Flow workspace accessible. Buffer, Cloudinary and Gemini also passed their connection checks.
+
+
+### Bounded scene recovery (2026-11-06)
+
+Transient scene failures now close the owned Flow browser before retrying, including closing it on the final failure. Scene attempts are finite even if the legacy persistent-retry flag is enabled. Hosted limits are six total scene attempts, three download-recovery attempts per result, and one replacement generation per scene. Replacement counts survive process restarts through saved checkpoints; Render free storage can still lose checkpoints on restart. When exhausted, SCENE_RETRY_EXHAUSTED prevents scheduler auto-resumption and preserves completed scenes. Google unusual-activity, sign-in and policy errors stop immediately without automatic account switching or resubmission. No Google account transfer is part of this change.

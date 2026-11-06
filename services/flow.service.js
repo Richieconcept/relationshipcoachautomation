@@ -1356,6 +1356,7 @@ export async function generateVideo(job) {
       videoUrl: buildVideoUrl(filename)
     });
   } catch (error) {
+    await closeBrowser().catch(() => {});
     updateJob(job.id, 'failed', {
       message: error.message || 'Video generation failed.',
       error: automationErrorCode(error),
