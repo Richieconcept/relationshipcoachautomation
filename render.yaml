@@ -11,6 +11,12 @@ services:
         value: production
       - key: HEADLESS
         value: "true"
+      - key: MEMORY_DIAGNOSTICS
+        value: "true"
+      - key: COMPACT_BROWSER_VIEWPORT
+        value: "true"
+      - key: CLOSE_BROWSER_AFTER_GENERATION
+        value: "true"
       - key: ALLOW_REMOTE_CONTROLS
         value: "true"
       - key: TRUST_PROXY

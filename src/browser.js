@@ -3,10 +3,12 @@ import { chromium } from 'playwright';
 import { getActiveAccountId, getAccountProfileDir } from './accounts.js';
 import { config } from './config.js';
 import { logger } from './logger.js';
+import { startMemoryMonitor } from './memory-monitor.js';
 
 let contextPromise;
 let contextAccountId;
 let flowPage;
+let stopMemoryMonitor;
 
 export async function getBrowserContext(accountId = getActiveAccountId()) {
   if (contextPromise && contextAccountId !== accountId) {
@@ -17,6 +19,7 @@ export async function getBrowserContext(accountId = getActiveAccountId()) {
     contextAccountId = accountId;
     const profileDir = getAccountProfileDir(contextAccountId);
 
+    if (config.memoryDiagnostics && !stopMemoryMonitor) stopMemoryMonitor = startMemoryMonitor('flow-browser');
     logger.info('Opening Chrome', { accountId: contextAccountId, profileDir });
     contextPromise = chromium.launchPersistentContext(profileDir, {
       headless: config.headless,
@@ -24,7 +27,7 @@ export async function getBrowserContext(accountId = getActiveAccountId()) {
       downloadsPath: config.browserDownloadTempDir,
       chromiumSandbox: config.chromiumSandbox,
       channel: 'chrome',
-      viewport: { width: 1440, height: 1000 }
+      viewport: config.compactBrowserViewport ? { width: 1280, height: 720 } : { width: 1440, height: 1000 }
     }).catch(async (error) => {
       logger.warn('Installed Chrome was not available, falling back to bundled Chromium', {
         error: error.message
@@ -35,7 +38,7 @@ export async function getBrowserContext(accountId = getActiveAccountId()) {
         acceptDownloads: true,
         downloadsPath: config.browserDownloadTempDir,
         chromiumSandbox: config.chromiumSandbox,
-        viewport: { width: 1440, height: 1000 }
+        viewport: config.compactBrowserViewport ? { width: 1280, height: 720 } : { width: 1440, height: 1000 }
       });
     });
     contextPromise = contextPromise.then(async context => {
@@ -48,6 +51,8 @@ export async function getBrowserContext(accountId = getActiveAccountId()) {
         contextPromise = null;
         contextAccountId = null;
         flowPage = null;
+        stopMemoryMonitor?.();
+        stopMemoryMonitor = null;
       }
     };
     launched.then(context => context.on('close', reset), reset);
@@ -84,6 +89,8 @@ export async function closeBrowser() {
   }
 
   flowPage = null;
+  stopMemoryMonitor?.();
+  stopMemoryMonitor = null;
   const closing = contextPromise;
   contextPromise = null;
   contextAccountId = null;
